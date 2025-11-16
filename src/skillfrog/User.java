@@ -2,11 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-<<<<<<< Updated upstream:src/javaapplication12/User.java
-package javaapplication12;
-=======
 package skillfrog;
->>>>>>> Stashed changes:src/skillfrog/User.java
 
 /**
  *
@@ -21,23 +17,9 @@ public abstract class User {
     protected String passwordHash;
 
     public User() {
-<<<<<<< Updated upstream:src/javaapplication12/User.java
-        this.userId = 0;
-        this.role = "";
-        this.passwordHash = "*****";
-        this.role = "";
-        this.email = "@";
-    }
-
-    public User(int id, String rol, String email, String pass, String name) {
-        this.userId = id;
-        this.role = rol;
-        this.email = email;
-        this.passwordHash = pass;
-        this.username = name;
-=======
 
     }
+    // super(id, name, email, pass ,"instructor");
 
     public User(int id, String username, String email, String passwordHash, String role) {
         this.userId = id;
@@ -45,7 +27,6 @@ public abstract class User {
         this.email = email;
         this.passwordHash = passwordHash;
         this.role = role;
->>>>>>> Stashed changes:src/skillfrog/User.java
 
     }
 
