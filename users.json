@@ -1,0 +1,33 @@
+[
+  {
+    "enrolledCourses": [
+      "101"
+    ],
+    "progress": {
+      "101": {
+        "1": true,
+        "2": true
+      }
+    },
+    "userId": 1,
+    "role": "student",
+    "username": "Alice",
+    "email": "alice@example.com",
+    "passwordHash": "pass123"
+  },
+  {
+    "enrolledCourses": [
+      "102"
+    ],
+    "progress": {
+      "102": {
+        "1": true
+      }
+    },
+    "userId": 2,
+    "role": "student",
+    "username": "Bob",
+    "email": "bob@example.com",
+    "passwordHash": "pass456"
+  }
+]
