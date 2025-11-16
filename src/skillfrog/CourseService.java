@@ -5,7 +5,7 @@ import java.util.List;
 
 public class CourseService {
 
-    private final CourseRepository repo = new CourseRepository();
+    private final JsonDatabaseManager repo = new JsonDatabaseManager();
     private List<Course> courses = repo.loadCourses();
 
     public boolean createCourse(Course c) {
@@ -17,8 +17,8 @@ public class CourseService {
         return true;
     }
 
-    public boolean updateCourse(int id, Course newData) {
-        if (!courseExists(id)) {
+    public boolean updateCourse(int id, Course newData, Instructor instructor) {
+        if (!courseExists(id) || !ownsCourse(id, instructor)) {
             return false;
         }
         for (Course c : courses) {
@@ -32,17 +32,22 @@ public class CourseService {
         return false;
     }
 
-    public boolean deleteCourse(int id) {
-        if (!courseExists(id)) {
+    public boolean deleteCourse(int id, Instructor instructor) {
+        if (!courseExists(id) || !ownsCourse(id, instructor)) {
             return false;
         }
         courses.removeIf(c -> c.getId() == id);
         repo.saveCourses(courses);
+
+        Instructor real = (Instructor) repo.getUserByEmail(instructor.getEmail());
+        real.getCreatedCourses().remove(Integer.valueOf(id));
+        repo.saveUsers();
+
         return true;
     }
 
-    public boolean addLesson(int courseId, Lesson lesson) {
-        if (!courseExists(courseId)) {
+    public boolean addLesson(int courseId, Lesson lesson, Instructor instructor) {
+        if (!courseExists(courseId) || !ownsCourse(courseId, instructor)) {
             return false;
         }
         if (lessonExists(courseId, lesson.getId())) {
@@ -58,8 +63,8 @@ public class CourseService {
         return false;
     }
 
-    public boolean editLesson(int courseId, int lessonId, Lesson newData) {
-        if (!courseExists(courseId) || !lessonExists(courseId, lessonId)) {
+    public boolean editLesson(int courseId, int lessonId, Lesson newData, Instructor instructor) {
+        if (!courseExists(courseId) || !lessonExists(courseId, lessonId) || !ownsCourse(courseId, instructor)) {
             return false;
         }
         for (Course c : courses) {
@@ -77,8 +82,8 @@ public class CourseService {
         return false;
     }
 
-    public boolean deleteLesson(int courseId, int lessonId) {
-        if (!courseExists(courseId) || !lessonExists(courseId, lessonId)) {
+    public boolean deleteLesson(int courseId, int lessonId, Instructor instructor) {
+        if (!courseExists(courseId) || !lessonExists(courseId, lessonId) || !ownsCourse(courseId, instructor)) {
             return false;
         }
         for (Course c : courses) {
@@ -142,5 +147,9 @@ public class CourseService {
             }
         }
         return null;
+    }
+
+    public boolean ownsCourse(int courseId, Instructor instructor) {
+        return instructor.getCreatedCourses().contains(courseId);
     }
 }

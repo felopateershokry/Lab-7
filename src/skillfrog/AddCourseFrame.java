@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 public class AddCourseFrame extends javax.swing.JFrame {
 
     CourseService service = new CourseService();
+    private final JsonDatabaseManager db = new JsonDatabaseManager();
 
     /**
      * Creates new form AddCourseFrame
@@ -170,9 +171,21 @@ public class AddCourseFrame extends javax.swing.JFrame {
 
         int id;
         id = Integer.parseInt(CourseId);
+        if (id < 1) {
+            JOptionPane.showMessageDialog(this, "Invalid id", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         Course c = new Course(id, CourseTitle, CourseDis);
+        c.setInstructorId(Session.loggedUser.getUserId());
+
+        User real = db.getUserByEmail(Session.loggedUser.getEmail());
+        Instructor i = (Instructor) real;
         if (service.createCourse(c)) {
             JOptionPane.showMessageDialog(this, "Course added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+            i.addCreatedCourse(id);
+            db.saveUsers();
+
             this.setVisible(false);
             new CourseFrameHome().setVisible(true);
         } else {

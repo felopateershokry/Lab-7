@@ -197,13 +197,23 @@ public class EditLessonFrame extends javax.swing.JFrame {
         try {
             int cid = Integer.parseInt(courseId);
             int lid = Integer.parseInt(lessonId);
-            Lesson l1 = service.lessonExist(cid, lid);
+            if (cid < 1 || lid < 1) {
+                JOptionPane.showMessageDialog(this, "Invalid id", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            Instructor instructor = (Instructor) Session.loggedUser;
+            if (service.ownsCourse(cid, instructor)) {
+                Lesson l1 = service.lessonExist(cid, lid);
 
-            if (l1 != null) {
-                jTextField3.setText(l1.getTitle());
-                jTextField4.setText(l1.getContent());
+                if (l1 != null) {
+                    jTextField3.setText(l1.getTitle());
+                    jTextField4.setText(l1.getContent());
+                } else {
+                    JOptionPane.showMessageDialog(this, "Failed to Find lesson", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+
             } else {
-                JOptionPane.showMessageDialog(this, "Failed to Find lesson", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "You donot allow to Edit this lesson", "Error", JOptionPane.ERROR_MESSAGE);
             }
 
         } catch (NumberFormatException e) {
@@ -221,8 +231,9 @@ public class EditLessonFrame extends javax.swing.JFrame {
         cid = Integer.parseInt(CourseId);
         lid = Integer.parseInt(lessonId);
 
+        Instructor instructor = (Instructor) Session.loggedUser;
         Lesson l = new Lesson(lid, title, content);
-        if (service.editLesson(cid, lid, l)) {
+        if (service.editLesson(cid, lid, l, instructor)) {
             JOptionPane.showMessageDialog(this, "Lesson Edited successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
             this.setVisible(false);
             new CourseFrameHome().setVisible(true);
