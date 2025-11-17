@@ -12,7 +12,8 @@ import javax.swing.JOptionPane;
  */
 public class AddLessonFrame extends javax.swing.JFrame {
 
-    CourseService service = new CourseService();
+    private final JsonDatabaseManager db = new JsonDatabaseManager();
+    private final CourseService service = new CourseService(db);
 
     /**
      * Creates new form AddLessonFrame

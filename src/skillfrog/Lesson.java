@@ -16,7 +16,6 @@ public class Lesson {
         this.content = content;
     }
 
-    // Getters and setters
     public int getId() {
         return id;
     }

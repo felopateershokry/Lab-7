@@ -12,8 +12,8 @@ import javax.swing.JOptionPane;
  */
 public class AddCourseFrame extends javax.swing.JFrame {
 
-    CourseService service = new CourseService();
     private final JsonDatabaseManager db = new JsonDatabaseManager();
+    private final CourseService service = new CourseService(db);
 
     /**
      * Creates new form AddCourseFrame
@@ -180,7 +180,7 @@ public class AddCourseFrame extends javax.swing.JFrame {
 
         User real = db.getUserByEmail(Session.loggedUser.getEmail());
         Instructor i = (Instructor) real;
-        if (service.createCourse(c)) {
+        if (service.createCourse(c, i)) {
             JOptionPane.showMessageDialog(this, "Course added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
 
             i.addCreatedCourse(id);

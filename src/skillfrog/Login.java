@@ -168,6 +168,11 @@ public class Login extends javax.swing.JFrame {
         } else {
             if ("student".equals(user.role)) {
                 JOptionPane.showMessageDialog(null, "login successfully \n welcome " + user.username);
+                this.setVisible(false);
+                if (user instanceof Student) {
+                    new StudentDashboardFrame(user.getUserId(), new StudentService()).setVisible(true);
+                    this.dispose(); // close login window
+                }
 
             } else {
                 JOptionPane.showMessageDialog(null, "login successfully \n welcome " + user.username);

@@ -12,7 +12,8 @@ import javax.swing.JOptionPane;
  */
 public class EditCourseFrame extends javax.swing.JFrame {
 
-    CourseService service = new CourseService();
+    private final JsonDatabaseManager db = new JsonDatabaseManager();
+    private final CourseService service = new CourseService(db);
 
     /**
      * Creates new form EditCourseFrame
@@ -203,7 +204,7 @@ public class EditCourseFrame extends javax.swing.JFrame {
             }
             Instructor instructor = (Instructor) Session.loggedUser;
             if (service.ownsCourse(id, instructor)) {
-                Course c1 = service.courseExist(id);
+                Course c1 = service.getCourse(id);
 
                 if (c1 != null) {
                     jTextField2.setText(c1.getTitle());

@@ -5,22 +5,40 @@ import java.util.List;
 
 public class CourseService {
 
-    private final JsonDatabaseManager repo = new JsonDatabaseManager();
-    private List<Course> courses = repo.loadCourses();
+    private JsonDatabaseManager repo;
+    private List<Course> courses;
 
-    public boolean createCourse(Course c) {
+    public CourseService(JsonDatabaseManager repo) {
+        this.repo = repo;
+        this.courses = repo.loadCourses();
+    }
+
+    CourseService() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    public boolean createCourse(Course c, Instructor instructor) {
+
         if (courseExists(c.getId())) {
             return false;
         }
+
         courses.add(c);
         repo.saveCourses(courses);
+
+        Instructor real = (Instructor) repo.getUserByEmail(instructor.getEmail());
+        real.getCreatedCourses().add(c.getId());
+        repo.saveUsers();
+
         return true;
     }
 
     public boolean updateCourse(int id, Course newData, Instructor instructor) {
+
         if (!courseExists(id) || !ownsCourse(id, instructor)) {
             return false;
         }
+
         for (Course c : courses) {
             if (c.getId() == id) {
                 c.setTitle(newData.getTitle());
@@ -33,9 +51,11 @@ public class CourseService {
     }
 
     public boolean deleteCourse(int id, Instructor instructor) {
+
         if (!courseExists(id) || !ownsCourse(id, instructor)) {
             return false;
         }
+
         courses.removeIf(c -> c.getId() == id);
         repo.saveCourses(courses);
 
@@ -47,12 +67,14 @@ public class CourseService {
     }
 
     public boolean addLesson(int courseId, Lesson lesson, Instructor instructor) {
+
         if (!courseExists(courseId) || !ownsCourse(courseId, instructor)) {
             return false;
         }
         if (lessonExists(courseId, lesson.getId())) {
             return false;
         }
+
         for (Course c : courses) {
             if (c.getId() == courseId) {
                 c.getLessons().add(lesson);
@@ -64,9 +86,11 @@ public class CourseService {
     }
 
     public boolean editLesson(int courseId, int lessonId, Lesson newData, Instructor instructor) {
-        if (!courseExists(courseId) || !lessonExists(courseId, lessonId) || !ownsCourse(courseId, instructor)) {
+
+        if (!courseExists(courseId) || !ownsCourse(courseId, instructor) || !lessonExists(courseId, lessonId)) {
             return false;
         }
+
         for (Course c : courses) {
             if (c.getId() == courseId) {
                 for (Lesson l : c.getLessons()) {
@@ -83,9 +107,11 @@ public class CourseService {
     }
 
     public boolean deleteLesson(int courseId, int lessonId, Instructor instructor) {
-        if (!courseExists(courseId) || !lessonExists(courseId, lessonId) || !ownsCourse(courseId, instructor)) {
+
+        if (!courseExists(courseId) || !ownsCourse(courseId, instructor) || !lessonExists(courseId, lessonId)) {
             return false;
         }
+
         for (Course c : courses) {
             if (c.getId() == courseId) {
                 c.getLessons().removeIf(l -> l.getId() == lessonId);
@@ -93,50 +119,38 @@ public class CourseService {
                 return true;
             }
         }
+
         return false;
     }
 
-    public List<String> getEnrolledStudents(int courseId) {
-        for (Course c : courses) {
-            if (c.getId() == courseId) {
-                return c.getEnrolledStudents();
-            }
-        }
-        return new ArrayList<>();
-    }
-
-    public boolean courseExists(int courseId) {
-        for (Course c : courses) {
-            if (c.getId() == courseId) {
-                return true;
-            }
-        }
-        return false;
+    public boolean courseExists(int id) {
+        return courses.stream().anyMatch(c -> c.getId() == id);
     }
 
     public boolean lessonExists(int courseId, int lessonId) {
         for (Course c : courses) {
             if (c.getId() == courseId) {
-                for (Lesson l : c.getLessons()) {
-                    if (l.getId() == lessonId) {
-                        return true;
-                    }
-                }
+                return c.getLessons().stream().anyMatch(l -> l.getId() == lessonId);
             }
         }
         return false;
     }
 
-    public Course courseExist(int courseId) {
+    public boolean ownsCourse(int courseId, Instructor instructor) {
+        Instructor real = (Instructor) repo.getUserByEmail(instructor.getEmail());
+        return real.getCreatedCourses().contains(courseId);
+    }
+
+    public Course getCourse(int id) {
         for (Course c : courses) {
-            if (c.getId() == courseId) {
+            if (c.getId() == id) {
                 return c;
             }
         }
         return null;
     }
 
-    public Lesson lessonExist(int courseId, int lessonId) {
+    public Lesson getLesson(int courseId, int lessonId) {
         for (Course c : courses) {
             if (c.getId() == courseId) {
                 for (Lesson l : c.getLessons()) {
@@ -149,7 +163,11 @@ public class CourseService {
         return null;
     }
 
-    public boolean ownsCourse(int courseId, Instructor instructor) {
-        return instructor.getCreatedCourses().contains(courseId);
+    public List<Course> getAllCourses() {
+        return courses;
+    }
+
+    List<String> getEnrolledStudents(int courseId) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

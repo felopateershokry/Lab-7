@@ -13,8 +13,8 @@ import java.util.HashMap;
  */
 public class Student extends User {
 
-    private ArrayList<Course> enrolledCourses;
-    private HashMap<String, Boolean> progress;
+    private ArrayList<String> enrolledCourses;
+    private HashMap<String, HashMap<String, Boolean>> progress;
 
     public Student(int id, String name, String email, String pass) {
         super(id, name, email, pass, "student");
@@ -22,29 +22,35 @@ public class Student extends User {
         this.progress = new HashMap<>();
     }
 
-    public ArrayList<Course> getEnrolledCourses() {
+    public ArrayList<String> getEnrolledCourses() {
+        if (enrolledCourses == null) {
+            enrolledCourses = new ArrayList<>();
+        }
         return enrolledCourses;
     }
 
-    public HashMap<String, Boolean> getProgress() {
+    public HashMap<String, HashMap<String, Boolean>> getProgress() {
         return progress;
     }
 
-    public void setEnrolledCourses(ArrayList<Course> enrolledCourses) {
-        this.enrolledCourses = enrolledCourses;
-    }
-
-    public void setProgress(HashMap<String, Boolean> progress) {
+    public void setProgress(HashMap<String, HashMap<String, Boolean>> progress) {
         this.progress = progress;
     }
 
-    public void enrollCourse(Course c) {
-        if (!enrolledCourses.contains(c)) {
-            enrolledCourses.add(c);
+    public void setEnrolledCourses(ArrayList<String> enrolledCourses) {
+        this.enrolledCourses = enrolledCourses;
+    }
+
+    public void enrollCourse(String Id) {
+        if (!enrolledCourses.contains(Id)) {
+            enrolledCourses.add(Id);
         }
     }
 
-    public void markLessonCompleted(String lessonId) {
-        progress.put(lessonId, true);
+    public void markLessonCompleted(String courseId, String lessonId) {
+        HashMap<String, Boolean> courseProgress = progress.getOrDefault(courseId, new HashMap<>());
+        courseProgress.put(lessonId, true);
+        progress.put(courseId, courseProgress);
     }
+
 }
