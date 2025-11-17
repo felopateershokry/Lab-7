@@ -10,12 +10,17 @@ package skillfrog;
  */
 public class StudentsEnrolledFrame extends javax.swing.JFrame {
 
+    private JsonDatabaseManager db;
+    private CourseService service;
+
     /**
      * Creates new form StudentsEnrolled
      */
     public StudentsEnrolledFrame() {
         initComponents();
         this.setLocationRelativeTo(null);
+        CourseEnrollmentManager.loadEnrollments("courses.json", "users.json");
+        jTable2.setModel(CourseEnrollmentManager.tableModel);
     }
 
     /**
@@ -29,31 +34,32 @@ public class StudentsEnrolledFrame extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        jTable2 = new javax.swing.JTable();
         back = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jTable1.setFont(new java.awt.Font("Swis721 LtEx BT", 1, 14)); // NOI18N
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        jTable2.setFont(new java.awt.Font("Swis721 LtEx BT", 1, 14)); // NOI18N
+        jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null}
             },
             new String [] {
-                "Student Id", "Student Name", "Student Email"
+                "Course Id", "Student Id", "Student Name"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class
+                java.lang.Object.class, java.lang.Integer.class, java.lang.String.class
             };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable1);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setMaxWidth(100);
+        jScrollPane1.setViewportView(jTable2);
+        if (jTable2.getColumnModel().getColumnCount() > 0) {
+            jTable2.getColumnModel().getColumn(0).setMaxWidth(100);
+            jTable2.getColumnModel().getColumn(1).setMaxWidth(100);
         }
 
         back.setBackground(new java.awt.Color(51, 51, 51));
@@ -144,6 +150,6 @@ public class StudentsEnrolledFrame extends javax.swing.JFrame {
     private javax.swing.JButton back;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable jTable2;
     // End of variables declaration//GEN-END:variables
 }

@@ -12,7 +12,8 @@ import javax.swing.JOptionPane;
  */
 public class AddLessonFrame extends javax.swing.JFrame {
 
-    CourseService service = new CourseService();
+    private final JsonDatabaseManager db = new JsonDatabaseManager();
+    private final CourseService service = new CourseService(db);
 
     /**
      * Creates new form AddLessonFrame
@@ -184,8 +185,13 @@ public class AddLessonFrame extends javax.swing.JFrame {
         cid = Integer.parseInt(courseId);
         lid = Integer.parseInt(lessonId);
 
+        if (cid < 1 || lid < 1) {
+            JOptionPane.showMessageDialog(this, "Invalid id", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        Instructor i = (Instructor) Session.loggedUser;
         Lesson l = new Lesson(lid, title, content);
-        if (service.addLesson(cid, l)) {
+        if (service.addLesson(cid, l, i)) {
             JOptionPane.showMessageDialog(this, "Lesson added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
             this.setVisible(false);
             new CourseFrameHome().setVisible(true);
