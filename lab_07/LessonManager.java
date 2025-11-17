@@ -14,115 +14,92 @@ import java.util.ArrayList;
 /**
  *
  * @author PC
- */
-public class LessonManager {
+ */public class LessonManager {
 
     private final String COURSES_FILE = "courses.json";
 
-    private JSONObject readCoursesFile() {
+    // Read courses as JSONArray
+    private JSONArray readCoursesFile() {
         try {
-            String content = new String(Files.readAllBytes(Paths.get(COURSES_FILE)));
-            return new JSONObject(content);
-        } catch (Exception e) {
-            return new JSONObject(); // empty database
-        }
-    }
-
-    private void writeCoursesFile(JSONObject data) {
-        try {
-            Files.write(Paths.get(COURSES_FILE), data.toString(4).getBytes());
+            String content = new String(Files.readAllBytes(Paths.get(COURSES_FILE)), "UTF-8");
+            return new JSONArray(content);
         } catch (Exception e) {
             e.printStackTrace();
+            return new JSONArray();
         }
     }
 
     public ArrayList<Lesson> getLessonsByCourse(String courseId) {
-        JSONObject db = readCoursesFile();
 
-        if (!db.has(courseId)) {
-            return new ArrayList<>();
-        }
-
-        JSONArray lessonsArr = db.getJSONObject(courseId).getJSONArray("lessons");
-
+        JSONArray coursesArr = readCoursesFile();
         ArrayList<Lesson> lessons = new ArrayList<>();
-        for (int i = 0; i < lessonsArr.length(); i++) {
-            JSONObject obj = lessonsArr.getJSONObject(i);
-            lessons.add(Lesson.fromJSON(obj));
+
+        int id = Integer.parseInt(courseId);
+
+        for (int i = 0; i < coursesArr.length(); i++) {
+            JSONObject course = coursesArr.getJSONObject(i);
+
+            if (course.getInt("id") == id) {
+                JSONArray lessonsArr = course.getJSONArray("lessons");
+
+                for (int j = 0; j < lessonsArr.length(); j++) {
+
+                    JSONObject l = lessonsArr.getJSONObject(j);
+
+                    Lesson lesson = new Lesson(
+                            String.valueOf(l.getInt("id")),
+                            l.getString("title"),
+                            l.getString("content"),
+                            null
+                    );
+
+                    lessons.add(lesson);
+                }
+            }
         }
 
         return lessons;
     }
 
-    public void addLesson(String courseId, Lesson lesson) {
-        JSONObject db = readCoursesFile();
-
-        if (!db.has(courseId)) {
-            return;
-        }
-
-        JSONArray lessonsArr = db.getJSONObject(courseId).getJSONArray("lessons");
-        lessonsArr.put(lesson.toJSON());
-
-        writeCoursesFile(db);
-    }
-
-    public void deleteLesson(String courseId, String lessonId) {
-        JSONObject db = readCoursesFile();
-
-        if (!db.has(courseId)) {
-            return;
-        }
-
-        JSONArray lessonsArr = db.getJSONObject(courseId).getJSONArray("lessons");
-        JSONArray newArr = new JSONArray();
-
-        for (int i = 0; i < lessonsArr.length(); i++) {
-            if (!lessonsArr.getJSONObject(i).getString("lessonId").equals(lessonId)) {
-                newArr.put(lessonsArr.getJSONObject(i));
-            }
-        }
-
-        db.getJSONObject(courseId).put("lessons", newArr);
-        writeCoursesFile(db);
-    }
-
+    // ✔ FIXED: Compatible with users.json (array of users)
     public void markLessonCompleted(String userId, String courseId, String lessonId) {
+
         try {
-            // Read users.json
             String path = "users.json";
-            String content = new String(Files.readAllBytes(Paths.get(path)));
-            JSONObject usersDb = new JSONObject(content);
+            String content = new String(Files.readAllBytes(Paths.get(path)), "UTF-8");
 
-            if (!usersDb.has(userId)) {
-                return;
+            JSONArray usersArr = new JSONArray(content);
+
+            int uid = Integer.parseInt(userId);
+
+            for (int i = 0; i < usersArr.length(); i++) {
+
+                JSONObject user = usersArr.getJSONObject(i);
+                if (user.getInt("userId") == uid) {
+
+                    if (!user.has("progress"))
+                        user.put("progress", new JSONObject());
+
+                    JSONObject progress = user.getJSONObject("progress");
+
+                    if (!progress.has(courseId))
+                        progress.put(courseId, new JSONArray());
+
+                    JSONArray completed = progress.getJSONArray(courseId);
+
+                    // Prevent duplicates
+                    if (!completed.toList().contains(lessonId))
+                        completed.put(lessonId);
+
+                    // Save file
+                    Files.write(Paths.get(path), usersArr.toString(4).getBytes());
+                    return;
+                }
             }
-
-            JSONObject user = usersDb.getJSONObject(userId);
-
-            // Ensure progress object exists
-            if (!user.has("progress")) {
-                user.put("progress", new JSONObject());
-            }
-
-            JSONObject progress = user.getJSONObject("progress");
-
-            // Ensure course progress exists
-            if (!progress.has(courseId)) {
-                progress.put(courseId, new JSONArray());
-            }
-
-            // Add lesson id if not already there
-            JSONArray completed = progress.getJSONArray(courseId);
-            if (!completed.toList().contains(lessonId)) {
-                completed.put(lessonId);
-            }
-
-            // Save
-            Files.write(Paths.get(path), usersDb.toString(4).getBytes());
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 }
+
