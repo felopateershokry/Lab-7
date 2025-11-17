@@ -105,7 +105,7 @@ public class SignUp extends javax.swing.JFrame {
         });
 
         signin.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        signin.setText("signin");
+        signin.setText("signup");
         signin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 signinActionPerformed(evt);
@@ -244,7 +244,7 @@ public class SignUp extends javax.swing.JFrame {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {

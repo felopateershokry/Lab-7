@@ -12,25 +12,29 @@ import java.util.ArrayList;
  */
 public class Instructor extends User {
 
-    private ArrayList<String> createdCourses;
+    private ArrayList<Integer> createdCourses;
 
     public Instructor(int id, String name, String email, String pass) {
         super(id, name, email, pass, "instructor");
         this.createdCourses = new ArrayList<>();
     }
 
-    public ArrayList<String> getCreatedCourses() {
+    public ArrayList<Integer> getCreatedCourses() {
         return createdCourses;
     }
 
-    public void setCreatedCourses(ArrayList<String> createdCourses) {
+    public void setCreatedCourses(ArrayList<Integer> createdCourses) {
         this.createdCourses = createdCourses;
     }
 
-    public void addCreatedCourse(String c) {
-        if (!createdCourses.contains(c)) {
-            this.createdCourses.add(c);
+    public void addCreatedCourse(int id) {
+        if (!createdCourses.contains(id)) {
+            this.createdCourses.add(id);
         }
+
     }
 
+    public boolean owns(int courseId) {
+        return createdCourses.contains(courseId);
+    }
 }

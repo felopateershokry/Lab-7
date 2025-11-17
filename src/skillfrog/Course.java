@@ -18,11 +18,20 @@ public class Course {
     private String description;
     private List<Lesson> lessons = new ArrayList<>();
     private List<String> enrolledStudents = new ArrayList<>();
+    private int instructorId;
 
     public Course(int id, String title, String description) {
         this.id = id;
         this.title = title;
         this.description = description;
+    }
+
+    public int getInstructorId() {
+        return instructorId;
+    }
+
+    public void setInstructorId(int instructorId) {
+        this.instructorId = instructorId;
     }
 
     public int getId() {

@@ -11,8 +11,9 @@ import javax.swing.JOptionPane;
  * @author Lenovo
  */
 public class EditCourseFrame extends javax.swing.JFrame {
-
-    CourseService service = new CourseService();
+    
+    private final JsonDatabaseManager db = new JsonDatabaseManager();
+    private final CourseService service = new CourseService(db);
 
     /**
      * Creates new form EditCourseFrame
@@ -169,17 +170,21 @@ public class EditCourseFrame extends javax.swing.JFrame {
         this.setVisible(false);
         new CourseFrameHome().setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
-
+    
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         String CourseId = jTextField1.getText();
         String CourseTitle = jTextField2.getText();
         String CourseDis = jTextField3.getText();
-
+        
         int id;
         id = Integer.parseInt(CourseId);
-
+        if (id < 1) {
+            JOptionPane.showMessageDialog(this, "Invalid id", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        Instructor instructor = (Instructor) Session.loggedUser;
         Course updatedCourse = new Course(id, CourseTitle, CourseDis);
-        if (service.updateCourse(id, updatedCourse)) {
+        if (service.updateCourse(id, updatedCourse, instructor)) {
             JOptionPane.showMessageDialog(this, "Course Edited successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
             this.setVisible(false);
             new CourseFrameHome().setVisible(true);
@@ -187,25 +192,33 @@ public class EditCourseFrame extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Failed to Find Course", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
-
+    
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         String courseId = jTextField1.getText();
-
+        
         try {
             int id = Integer.parseInt(courseId);
-            Course c1 = service.courseExist(id);
-
-            if (c1 != null) {
-                jTextField2.setText(c1.getTitle());
-                jTextField3.setText(c1.getDescription());
-            } else {
-                JOptionPane.showMessageDialog(this, "Failed to Find Course", "Error", JOptionPane.ERROR_MESSAGE);
+            if (id < 1) {
+                JOptionPane.showMessageDialog(this, "Invalid id", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
-
+            Instructor instructor = (Instructor) Session.loggedUser;
+            if (service.ownsCourse(id, instructor)) {
+                Course c1 = service.getCourse(id);
+                
+                if (c1 != null) {
+                    jTextField2.setText(c1.getTitle());
+                    jTextField3.setText(c1.getDescription());
+                } else {
+                    JOptionPane.showMessageDialog(this, "Failed to Find Course", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "You donot allow to Edit this Course", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Invalid Course ID", "Error", JOptionPane.ERROR_MESSAGE);
         }
-
+        
     }//GEN-LAST:event_jButton3ActionPerformed
 
     /**

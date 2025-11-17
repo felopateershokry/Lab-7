@@ -13,7 +13,7 @@ import java.util.HashMap;
  */
 public class Student extends User {
 
-    private ArrayList<String> enrolledCourses;
+    private ArrayList<Course> enrolledCourses;
     private HashMap<String, Boolean> progress;
 
     public Student(int id, String name, String email, String pass) {
@@ -22,7 +22,7 @@ public class Student extends User {
         this.progress = new HashMap<>();
     }
 
-    public ArrayList<String> getEnrolledCourses() {
+    public ArrayList<Course> getEnrolledCourses() {
         return enrolledCourses;
     }
 
@@ -30,7 +30,7 @@ public class Student extends User {
         return progress;
     }
 
-    public void setEnrolledCourses(ArrayList<String> enrolledCourses) {
+    public void setEnrolledCourses(ArrayList<Course> enrolledCourses) {
         this.enrolledCourses = enrolledCourses;
     }
 
@@ -38,9 +38,9 @@ public class Student extends User {
         this.progress = progress;
     }
 
-    public void enrollCourse(String Id) {
-        if (!enrolledCourses.contains(Id)) {
-            enrolledCourses.add(Id);
+    public void enrollCourse(Course c) {
+        if (!enrolledCourses.contains(c)) {
+            enrolledCourses.add(c);
         }
     }
 

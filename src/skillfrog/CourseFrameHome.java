@@ -12,7 +12,8 @@ import javax.swing.JOptionPane;
  */
 public class CourseFrameHome extends javax.swing.JFrame {
 
-    CourseService service = new CourseService();
+    private final JsonDatabaseManager db = new JsonDatabaseManager();
+    private final CourseService service = new CourseService(db);
 
     /**
      * Creates new form CourseFrameHome
@@ -41,6 +42,7 @@ public class CourseFrameHome extends javax.swing.JFrame {
         deleteCourse = new javax.swing.JButton();
         deleteLesson = new javax.swing.JButton();
         viewStudents = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -134,14 +136,25 @@ public class CourseFrameHome extends javax.swing.JFrame {
             }
         });
 
+        jButton1.setBackground(new java.awt.Color(51, 51, 51));
+        jButton1.setFont(new java.awt.Font("Swis721 LtEx BT", 1, 14)); // NOI18N
+        jButton1.setForeground(new java.awt.Color(255, 255, 255));
+        jButton1.setText("Logout");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(26, 26, 26)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(viewStudents, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -152,9 +165,9 @@ public class CourseFrameHome extends javax.swing.JFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(addLesson, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(editLesson, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(deleteLesson, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(deleteLesson, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(viewStudents, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(40, 40, 40))
-            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -173,9 +186,11 @@ public class CourseFrameHome extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(deleteCourse)
                     .addComponent(deleteLesson))
-                .addGap(29, 29, 29)
+                .addGap(18, 18, 18)
                 .addComponent(viewStudents)
-                .addContainerGap(48, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton1)
+                .addContainerGap(18, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -214,6 +229,9 @@ public class CourseFrameHome extends javax.swing.JFrame {
 
     private void deleteCourseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteCourseActionPerformed
         String courseId = JOptionPane.showInputDialog("Enter Course id: ");
+
+        Instructor instructor = (Instructor) Session.loggedUser;
+
         int confirm = JOptionPane.showConfirmDialog(
                 this,
                 "Are you sure you want to delete this course?",
@@ -223,8 +241,9 @@ public class CourseFrameHome extends javax.swing.JFrame {
         if (confirm == JOptionPane.YES_OPTION) {
             int id;
             id = Integer.parseInt(courseId);
-            if (service.deleteCourse(id)) {
+            if (service.deleteCourse(id, instructor)) {
                 JOptionPane.showMessageDialog(this, "Course deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+
             } else {
                 JOptionPane.showMessageDialog(this, "Failed to delete course", "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -234,6 +253,7 @@ public class CourseFrameHome extends javax.swing.JFrame {
     private void deleteLessonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteLessonActionPerformed
         String courseId = JOptionPane.showInputDialog("Enter Course id: ");
         String lessonId = JOptionPane.showInputDialog("Enter Lesson id: ");
+        Instructor instructor = (Instructor) Session.loggedUser;
         int confirm = JOptionPane.showConfirmDialog(
                 this,
                 "Are you sure you want to delete this lesson?",
@@ -244,7 +264,7 @@ public class CourseFrameHome extends javax.swing.JFrame {
             int cid, lid;
             cid = Integer.parseInt(courseId);
             lid = Integer.parseInt(lessonId);
-            if (service.deleteLesson(cid, lid)) {
+            if (service.deleteLesson(cid, lid, instructor)) {
                 JOptionPane.showMessageDialog(this, "Lesson deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(this, "Failed to delete lesson", "Error", JOptionPane.ERROR_MESSAGE);
@@ -256,6 +276,11 @@ public class CourseFrameHome extends javax.swing.JFrame {
         this.setVisible(false);
         new StudentsEnrolledFrame().setVisible(true);
     }//GEN-LAST:event_viewStudentsActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        this.setVisible(false);
+        new Login().setVisible(true);
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -286,6 +311,7 @@ public class CourseFrameHome extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 new CourseFrameHome().setVisible(true);
             }
@@ -299,6 +325,7 @@ public class CourseFrameHome extends javax.swing.JFrame {
     private javax.swing.JButton deleteLesson;
     private javax.swing.JButton editCourse;
     private javax.swing.JButton editLesson;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

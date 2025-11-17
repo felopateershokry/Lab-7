@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package skillfrog;
 
 import com.google.gson.Gson;
@@ -15,6 +11,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -25,6 +22,8 @@ public class JsonDatabaseManager {
 
     private ArrayList<User> users;
     private ArrayList<Course> courses;
+    private final String FILE_Courses = "courses.json";
+    private final Gson gson1 = new Gson();
 
     private final Gson gson;
 
@@ -99,6 +98,23 @@ public class JsonDatabaseManager {
 
     public int generateUserId() {
         return users.size() + 1;
+    }
+
+    public List<Course> loadCourses() {
+        try (FileReader reader = new FileReader(FILE_Courses)) {
+            return gson1.fromJson(reader, new TypeToken<List<Course>>() {
+            }.getType());
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    public void saveCourses(List<Course> courses) {
+        try (FileWriter writer = new FileWriter(FILE_Courses)) {
+            gson1.toJson(courses, writer);
+        } catch (Exception e) {
+            System.out.println("Error saving courses: " + e.getMessage());
+        }
     }
 
 }
